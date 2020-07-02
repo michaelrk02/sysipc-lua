@@ -10,6 +10,7 @@ function Server:__init(router, name, logger)
     self.request = FileDispatch(self:address()..".request")
     self.response = FileDispatch(self:address()..".response")
     self.handlers = {}
+    self.running = false
     return self
 end
 
@@ -42,12 +43,13 @@ function Server:handle_methods(object)
 end
 
 function Server:run()
+    self.running = true
     self.dispatch:unlock()
     self.request:remove()
     self.request:unlock()
     self.response:remove()
     self.response:unlock()
-    while true do
+    while self.running do
         local err = self:_intercept()
         if err ~= nil then
             if self.logger ~= nil then
@@ -61,7 +63,10 @@ end
 function Server:_intercept()
     local err
 
-    while not self.request:exists() do end
+    while self.running and not self.request:exists() do end
+    if not self.running then
+        return "server stopped"
+    end
 
     local req
     self.request:lock()
