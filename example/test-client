@@ -1,0 +1,29 @@
+#!/usr/bin/env lua
+
+dofile("repo.lua")
+
+local Router = require("sysipc.Router")
+local Client = require("sysipc.Client")
+
+local router = Router(".")
+local arith = Client(router, "arith")
+
+while true do
+    io.write("Op: ")
+    local op = io.read()
+
+    io.write("a: ")
+    local a = tonumber(io.read())
+
+    io.write("b: ")
+    local b = tonumber(io.read())
+
+    local args = {lhs = a, rhs = b}
+    local ret, err = arith:call(op, args)
+    if err == nil then
+        print("Result: "..tostring(ret))
+    else
+        print("error: "..err)
+    end
+end
+

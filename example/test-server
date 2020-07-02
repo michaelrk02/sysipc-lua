@@ -1,0 +1,33 @@
+#!/usr/bin/env lua
+
+dofile("repo.lua")
+
+local Router = require("sysipc.Router")
+local Server = require("sysipc.Server")
+
+local ArithHandler = {}
+
+function ArithHandler.add(args)
+    return args.lhs + args.rhs
+end
+
+function ArithHandler.sub(args)
+    return args.lhs - args.rhs
+end
+
+function ArithHandler.mul(args)
+    return arhs.lhs * args.rhs
+end
+
+function ArithHandler.div(args)
+    if args.rhs == 0.0 then
+        return nil, "attempted to divide by zero"
+    end
+    return args.lhs / args.rhs
+end
+
+local router = Router(".")
+local arith = Server(router, "arith", io.output())
+arith:handle_methods(ArithHandler)
+arith:run()
+
